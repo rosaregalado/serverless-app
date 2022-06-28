@@ -1,0 +1,32 @@
+service: serverless-app
+
+plugins:
+  - serverless-dynamodb-local
+  - serverless-offline #serverless-offline needs to be last in the list
+
+custom:
+  tableName: 'users-table-${self:provider.stage}'
+  dynamodb:
+    start:
+      migrate: true
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  stage: dev
+  region: us-west-1
+
+functions:
+  app:
+    handler: index.handler
+    events:
+      - http: ANY /
+      - http: 'ANY /{proxy+}'
+  getUser:
+    handler: index.handler
+    events:
+      - http: 'GET /users/{proxy+}'
+  createUser:
+    handler: index.handler
+    events:
+      - http: 'POST /users'
